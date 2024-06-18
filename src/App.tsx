@@ -1,6 +1,7 @@
 import React, { MouseEvent, useState, useEffect, useRef } from "react";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import { Modal, TextField, Box, IconButton } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 
 type Icon = {
   xPosition: number;
@@ -86,16 +87,18 @@ function App() {
     >
       {icons.map((icon, index) => (
         <React.Fragment key={index}>
-          <IconButton
-            style={{
-              position: "absolute",
-              top: `${icon.yPosition}%`,
-              left: `${icon.xPosition}%`,
-            }}
-            color="inherit"
-          >
-            <ChatBubbleIcon />
-          </IconButton>
+          <Tooltip title={icon.comment || ""} placement="right">
+            <IconButton
+              style={{
+                position: "absolute",
+                top: `${icon.yPosition}%`,
+                left: `${icon.xPosition}%`,
+              }}
+              color="inherit"
+            >
+              <ChatBubbleIcon />
+            </IconButton>
+          </Tooltip>
           <Modal
             style={{
               position: "absolute",
@@ -109,7 +112,6 @@ function App() {
               sx={{
                 background: "white",
                 width: 300,
-                height: 100,
                 borderRadius: 2,
                 display: "flex",
                 flexFlow: "column",
@@ -124,7 +126,6 @@ function App() {
                 }
                 placeholder="Add a comment!"
               />
-              {icon.comment && <p>Moa Winberg: {icon.comment}</p>}
             </Box>
           </Modal>
         </React.Fragment>
