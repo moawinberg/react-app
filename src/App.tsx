@@ -1,6 +1,6 @@
-import React, { MouseEvent, useState, useEffect } from "react";
+import React, { MouseEvent, useState, useEffect, useRef } from "react";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import { Modal, Button, TextField, Box, IconButton } from "@mui/material";
+import { Modal, TextField, Box, IconButton } from "@mui/material";
 
 type Icon = {
   xPosition: number;
@@ -13,9 +13,15 @@ type Icon = {
 function App() {
   const [icons, setIcons] = useState<Icon[]>([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const prevIconsLength = useRef(icons.length);
 
   useEffect(() => {
-    console.log(icons);
+    // check if a new icon has been added to open the comment modal
+    if (icons.length > prevIconsLength.current) {
+      const newIconIndex = icons.length - 1;
+      showCommentModal(newIconIndex);
+    }
+    prevIconsLength.current = icons.length; // update the previous length
   }, [icons]);
 
   const handleClose = (iconIndex: number) => {
@@ -26,7 +32,7 @@ function App() {
     );
   };
 
-  const showComment = (iconIndex: number) => {
+  const showCommentModal = (iconIndex: number) => {
     setModalIsOpen(true);
     setIcons((prevIcons) =>
       prevIcons.map((icon, index) =>
@@ -35,12 +41,16 @@ function App() {
     );
   };
 
-  const addComment = (iconIndex: number) => {
-    console.log("add comment");
+  const handleCommentChange = (commentInput: string, iconIndex: number) => {
+    setModalIsOpen(true);
+    setIcons((prevIcons) =>
+      prevIcons.map((icon, index) =>
+        index === iconIndex ? { ...icon, comment: commentInput } : icon
+      )
+    );
   };
 
   const handleClickOnScreen = (xPosition: number, yPosition: number) => {
-    // if a modal is open, we should not add a new icon
     if (modalIsOpen) {
       setModalIsOpen(false);
       return;
@@ -56,11 +66,7 @@ function App() {
     );
 
     if (iconIndex !== -1) {
-      showComment(iconIndex);
-      // if (icons[iconIndex].comment) {
-      //   showComment(iconIndex);
-      // }
-      // addComment(iconIndex);
+      showCommentModal(iconIndex);
     } else {
       const newIcon = {
         xPosition: xPercent,
@@ -94,7 +100,7 @@ function App() {
             style={{
               position: "absolute",
               top: `${icon.yPosition}%`,
-              left: `${icon.xPosition + 5}%`,
+              left: `${icon.xPosition + 3}%`,
             }}
             open={icon.modalOpen}
             onClose={() => handleClose(index)}
@@ -106,10 +112,19 @@ function App() {
                 height: 100,
                 borderRadius: 2,
                 display: "flex",
+                flexFlow: "column",
                 padding: 2,
               }}
             >
-              Moa Winberg: {icon.comment}
+              <TextField
+                size="small"
+                value={icon.comment || ""}
+                onChange={(event) =>
+                  handleCommentChange(event.target.value, index)
+                }
+                placeholder="Add a comment!"
+              />
+              {icon.comment && <p>Moa Winberg: {icon.comment}</p>}
             </Box>
           </Modal>
         </React.Fragment>
