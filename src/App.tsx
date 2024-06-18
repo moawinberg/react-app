@@ -25,7 +25,7 @@ function App() {
     prevIconsLength.current = icons.length; // update the previous length
   }, [icons]);
 
-  const handleClose = (iconIndex: number) => {
+  const closeCommentModal = (iconIndex: number) => {
     setIcons((prevIcons) =>
       prevIcons.map((icon, index) =>
         index === iconIndex ? { ...icon, modalOpen: false } : icon
@@ -94,7 +94,7 @@ function App() {
                 top: `${icon.yPosition}%`,
                 left: `${icon.xPosition}%`,
               }}
-              color="inherit"
+              color={icon.comment ? "primary" : "inherit"}
             >
               <ChatBubbleIcon />
             </IconButton>
@@ -106,7 +106,7 @@ function App() {
               left: `${icon.xPosition + 3}%`,
             }}
             open={icon.modalOpen}
-            onClose={() => handleClose(index)}
+            onClose={() => closeCommentModal(index)}
           >
             <Box
               sx={{
